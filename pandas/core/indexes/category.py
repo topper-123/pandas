@@ -179,8 +179,12 @@ class CategoricalIndex(Index, accessor.PandasDelegate):
                     dtype=None, **kwargs):
         result = object.__new__(cls)
 
-        values = cls._create_categorical(cls, values, categories, ordered,
-                                         dtype=dtype)
+        if not isinstance(values, Categorical):
+            if isinstance(values, CategoricalIndex):
+                values = values.values
+            else:
+                values = cls._create_categorical(cls, values, categories,
+                                                 ordered, dtype=dtype)
         result._data = values
         result.name = name
         for k, v in compat.iteritems(kwargs):
