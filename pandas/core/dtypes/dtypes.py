@@ -6,6 +6,7 @@ import numpy as np
 
 from pandas._libs.interval import Interval
 from pandas._libs.tslibs import NaT, Period, Timestamp, timezones
+from pandas.util._decorators import cache_readonly
 
 from pandas.core.dtypes.generic import ABCCategoricalIndex, ABCIndexClass
 
@@ -250,6 +251,7 @@ class CategoricalDtype(PandasExtensionDtype, ExtensionDtype):
         self._categories = state.pop('categories', None)
         self._ordered = state.pop('ordered', False)
 
+    @cache_readonly
     def __hash__(self):
         # _hash_categories returns a uint64, so use the negative
         # space for when we have unknown categories to avoid a conflict
