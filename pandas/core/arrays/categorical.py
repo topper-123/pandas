@@ -527,14 +527,15 @@ class Categorical(ExtensionArray, PandasObject):
             .. versionadded:: 0.19.0
 
         """
+        self = self.copy() if copy else self
+
         if is_categorical_dtype(dtype):
             # GH 10696/18593
             dtype = self.dtype.update_dtype(dtype)
-            self = self.copy() if copy else self
             if dtype == self.dtype:
                 return self
             return self._set_dtype(dtype)
-        return np.array(self, dtype=dtype, copy=copy)
+        return np.asarray(self, dtype=dtype)
 
     @cache_readonly
     def ndim(self):
@@ -1294,15 +1295,20 @@ class Categorical(ExtensionArray, PandasObject):
             if dtype==None (default), the same dtype as
             categorical.categories.dtype
         """
-        ret = take_1d(self.categories.values, self._codes)
-        if dtype and not is_dtype_equal(dtype, self.categories.dtype):
-            return np.asarray(ret, dtype)
-        if is_extension_array_dtype(ret):
-            # When we're a Categorical[ExtensionArray], like Interval,
-            # we need to ensure __array__ get's all the way to an
-            # ndarray.
-            ret = np.asarray(ret)
-        return ret
+        values = self.categories.values
+        if dtype is not None:
+            values = values.astype(dtype)
+
+        if not self.isna().any():
+            # fastest, but won't work with NaN's because -1 is in self._codes
+            ret = values[self._codes]
+        else:
+            ret = take_1d(values, self._codes)
+
+        # If we're a Categorical[ExtensionArray], like Interval,
+        # we need to ensure __array__ get's all the way to an
+        # ndarray.
+        return np.asarray(ret)
 
     def __setstate__(self, state):
         """Necessary for making this object picklable"""
