@@ -545,6 +545,8 @@ class Categorical(ExtensionArray, PandasObject):
     def itemsize(self):
         """
         return the size of a single category
+
+        .. deprecated:: 0.25.0
         """
         return self.categories.itemsize
 

@@ -382,6 +382,12 @@ class TestCategoricalAPI:
         out = cat.remove_unused_categories()
         assert out.tolist() == val.tolist()
 
+    def test_itemsize_deprecated(self):
+        cat = Categorical(["a", "b", "c", "a"], ordered=True)
+
+        with tm.assert_produces_warning(FutureWarning, check_stacklevel=False):
+            cat.itemsize
+
 
 class TestCategoricalAPIWithFactor(TestCategorical):
     def test_describe(self):
