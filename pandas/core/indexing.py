@@ -1186,11 +1186,11 @@ class _NDFrameIndexer(_NDFrameIndexerBase):
 
             _missing_key_warning = textwrap.dedent(
                 """
-            Passing list-likes to .loc or [] with any missing label will raise
-            KeyError in the future, you can use .reindex() as an alternative.
+            Passing list-likes to .loc or [] with any missing label is deprecated and
+            will raise a KeyError in the future. Use .reindex() instead.
 
-            See the documentation here:
-            https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#deprecate-loc-reindex-listlike"""  # noqa: E501
+            See the deprecation here:
+            https://pandas.pydata.org/pandas-docs/stable/whatsnew/v0.21.0.html#indexing-with-a-list-with-missing-labels-is-deprecated"""  # noqa: E501
             )
 
             if not (ax.is_categorical() or ax.is_interval()):

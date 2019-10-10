@@ -313,8 +313,8 @@ Selection by label
 
 .. warning::
 
-   Starting in 0.21.0, pandas will show a ``FutureWarning`` if indexing with a list with missing labels. In the future
-   this will raise a ``KeyError``. See :ref:`list-like Using loc with missing keys in a list is Deprecated <indexing.deprecate_loc_reindex_listlike>`.
+   Since 0.21.0, pandas has shown a ``FutureWarning`` if indexing with a list with missing labels. In the future
+   this will raise a ``KeyError``. See :ref:`Indexing with a list with missing labels is deprecated <v0.21.0.whatsnew_0210.api_breaking.loc>`.
 
 pandas provides a suite of methods in order to have **purely label based indexing**. This is a strict inclusion based protocol.
 Every label asked for must be in the index, or a ``KeyError`` will be raised.
@@ -620,62 +620,7 @@ For getting *multiple* indexers, using ``.get_indexer``:
   dfd.iloc[[0, 2], dfd.columns.get_indexer(['A', 'B'])]
 
 
-.. _deprecate_loc_reindex_listlike:
-.. _indexing.deprecate_loc_reindex_listlike:
-
-Indexing with list with missing labels is deprecated
-----------------------------------------------------
-
-.. warning::
-
-   Starting in 0.21.0, using ``.loc`` or ``[]`` with a list with one or more missing labels, is deprecated, in favor of ``.reindex``.
-
-In prior versions, using ``.loc[list-of-labels]`` would work as long as *at least 1* of the keys was found (otherwise it
-would raise a ``KeyError``). This behavior is deprecated and will show a warning message pointing to this section. The
-recommended alternative is to use ``.reindex()``.
-
-For example.
-
-.. ipython:: python
-
-   s = pd.Series([1, 2, 3])
-   s
-
-Selection with all keys found is unchanged.
-
-.. ipython:: python
-
-   s.loc[[1, 2]]
-
-Previous behavior
-
-.. code-block:: ipython
-
-   In [4]: s.loc[[1, 2, 3]]
-   Out[4]:
-   1    2.0
-   2    3.0
-   3    NaN
-   dtype: float64
-
-
-Current behavior
-
-.. code-block:: ipython
-
-   In [4]: s.loc[[1, 2, 3]]
-   Passing list-likes to .loc with any non-matching elements will raise
-   KeyError in the future, you can use .reindex() as an alternative.
-
-   See the documentation here:
-   http://pandas.pydata.org/pandas-docs/stable/indexing.html#deprecate-loc-reindex-listlike
-
-   Out[4]:
-   1    2.0
-   2    3.0
-   3    NaN
-   dtype: float64
-
+.. _indexing.reindexing:
 
 Reindexing
 ~~~~~~~~~~
