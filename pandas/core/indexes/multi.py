@@ -40,7 +40,7 @@ from pandas.core.indexes.base import (
     _index_shared_docs,
     ensure_index,
 )
-from pandas.core.indexes.frozen import FrozenList, _ensure_frozen
+from pandas.core.indexes.frozen import FrozenList, ensure_frozen
 import pandas.core.missing as missing
 from pandas.core.sorting import (
     get_group_index,
@@ -829,7 +829,7 @@ class MultiIndex(Index):
 
         if level is None:
             new_codes = FrozenList(
-                _ensure_frozen(level_codes, lev, copy=copy)._shallow_copy()
+                ensure_frozen(level_codes, lev, copy=copy)
                 for lev, level_codes in zip(self.levels, codes)
             )
         else:
@@ -837,9 +837,7 @@ class MultiIndex(Index):
             new_codes = list(self._codes)
             for lev_idx, level_codes in zip(level, codes):
                 lev = self.levels[lev_idx]
-                new_codes[lev_idx] = _ensure_frozen(
-                    level_codes, lev, copy=copy
-                )._shallow_copy()
+                new_codes[lev_idx] = ensure_frozen(level_codes, lev, copy=copy)
             new_codes = FrozenList(new_codes)
 
         if verify_integrity:
@@ -2087,9 +2085,8 @@ class MultiIndex(Index):
             if mask.any():
                 masked = []
                 for new_label in taken:
-                    label_values = new_label.values()
-                    label_values[mask] = na_value
-                    masked.append(np.asarray(label_values))
+                    new_label[mask] = na_value
+                    masked.append(np.asarray(new_label))
                 taken = masked
         else:
             taken = [lab.take(indices) for lab in self.codes]

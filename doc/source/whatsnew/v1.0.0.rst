@@ -186,7 +186,9 @@ Other API changes
 - In order to improve tab-completion, Pandas does not include most deprecated attributes when introspecting a pandas object using ``dir`` (e.g. ``dir(df)``).
   To see which attributes are excluded, see an object's ``_deprecations`` attribute, for example ``pd.DataFrame._deprecations`` (:issue:`28805`).
 - The returned dtype of ::func:`pd.unique` now matches the input dtype. (:issue:`27874`)
--
+- The level codes in :attr:`pandas.MultiIndex.codes` were previously ``pandas.core.indexes.frozen.FrozenNDArray``,
+  which were previously deprecated and have now been removed from the Pandas code base. The codes are now numpy arrays with the writeable flag set to False (:issue:`xxxx`).
+
 
 .. _whatsnew_1000.api.documentation:
 
@@ -227,7 +229,7 @@ Removal of prior version deprecations/changes
 - Removed the previously deprecated :meth:`ExtensionArray._formatting_values`. Use :attr:`ExtensionArray._formatter` instead. (:issue:`23601`)
 - Removed the previously deprecated ``IntervalIndex.from_intervals`` in favor of the :class:`IntervalIndex` constructor (:issue:`19263`)
 - Ability to read pickles containing :class:`Categorical` instances created with pre-0.16 version of pandas has been removed (:issue:`27538`)
--
+- Removed ``pandas.core.indexes.frozen.FrozenNDArray`` (:issue:`xxxxx`).
 
 .. _whatsnew_1000.performance:
 

@@ -114,74 +114,11 @@ class FrozenList(PandasObject, list):
     pop = append = extend = remove = sort = insert = _disabled
 
 
-class FrozenNDArray(PandasObject, np.ndarray):
-
-    # no __array_finalize__ for now because no metadata
-    def __new__(cls, data, dtype=None, copy=False):
-        warnings.warn(
-            "\nFrozenNDArray is deprecated and will be removed in a "
-            "future version.\nPlease use `numpy.ndarray` instead.\n",
-            FutureWarning,
-            stacklevel=2,
-        )
-
-        if copy is None:
-            copy = not isinstance(data, FrozenNDArray)
-        res = np.array(data, dtype=dtype, copy=copy).view(cls)
-        return res
-
-    def _disabled(self, *args, **kwargs):
-        """This method will not function because object is immutable."""
-        raise TypeError("'%s' does not support mutable operations." % self.__class__)
-
-    __setitem__ = __setslice__ = __delitem__ = __delslice__ = _disabled
-    put = itemset = fill = _disabled
-
-    def _shallow_copy(self):
-        return self.view()
-
-    def values(self):
-        """returns *copy* of underlying array"""
-        arr = self.view(np.ndarray).copy()
-        return arr
-
-    def __repr__(self):
-        """
-        Return a string representation for this object.
-        """
-        prepr = pprint_thing(self, escape_chars=("\t", "\r", "\n"), quote_strings=True)
-        return "%s(%s, dtype='%s')" % (type(self).__name__, prepr, self.dtype)
-
-    @deprecate_kwarg(old_arg_name="v", new_arg_name="value")
-    def searchsorted(self, value, side="left", sorter=None):
-        """
-        Find indices to insert `value` so as to maintain order.
-
-        For full documentation, see `numpy.searchsorted`
-
-        See Also
-        --------
-        numpy.searchsorted : Equivalent function.
-        """
-
-        # We are much more performant if the searched
-        # indexer is the same type as the array.
-        #
-        # This doesn't matter for int64, but DOES
-        # matter for smaller int dtypes.
-        #
-        # xref: https://github.com/numpy/numpy/issues/5370
-        try:
-            value = self.dtype.type(value)
-        except ValueError:
-            pass
-
-        return super().searchsorted(value, side=side, sorter=sorter)
-
-
-def _ensure_frozen(array_like, categories, copy=False):
+def ensure_frozen(array_like, categories, copy=False):
     array_like = coerce_indexer_dtype(array_like, categories)
-    array_like = array_like.view(FrozenNDArray)
     if copy:
         array_like = array_like.copy()
+    else:
+        array_like = array_like.view()
+    array_like.flags.writeable = False
     return array_like
