@@ -3,7 +3,7 @@ Generic data algorithms. This module is experimental at the moment and not
 intended for public consumption
 """
 from textwrap import dedent
-from typing import Dict, Optional, Tuple, Union
+from typing import overload, Any, TYPE_CHECKING, Dict, Optional, Tuple, Union
 from warnings import catch_warnings, simplefilter, warn
 
 import numpy as np
@@ -49,6 +49,11 @@ from pandas.core.dtypes.missing import isna, na_value_for_dtype
 import pandas.core.common as com
 from pandas.core.construction import array, extract_array
 from pandas.core.indexers import validate_indices
+
+if TYPE_CHECKING:
+    from pandas import Index, Series
+    from pandas.core.arrays.base import ExtensionArray
+    from pandas._typing import SameExtensionArray, SameIndex
 
 _shared_docs: Dict[str, str] = {}
 
@@ -280,7 +285,27 @@ def _check_object_for_strings(values) -> str:
 # --------------- #
 
 
-def unique(values):
+@overload
+def unique(values: "SameIndex") -> "SameIndex":
+    ...
+
+
+@overload
+def unique(values: "Series") -> "Series":
+    ...
+
+
+@overload
+def unique(values: "SameExtensionArray") -> "SameExtensionArray":
+    ...
+
+
+@overload
+def unique(values) -> np.ndarray:
+    ...
+
+
+def unique(values) -> "Union[ExtensionArray, Index, np.ndarray, Series]":
     """
     Hash table-based unique. Uniques are returned in order
     of appearance. This does NOT sort.
@@ -298,7 +323,7 @@ def unique(values):
         The return can be:
 
         * Index : when the input is an Index
-        * Categorical : when the input is a Categorical dtype
+        * ExtensionArray : when the input is a ExtensionDtype
         * ndarray : when the input is a Series/ndarray
 
         Return numpy.ndarray or ExtensionArray.
@@ -572,6 +597,43 @@ _shared_docs[
     """
 
 
+@overload
+def factorize(
+    values: "Series",
+    sort: bool = False,
+    na_sentinel: int = -1,
+    size_hint: Optional[int] = None,
+) -> "Tuple[np.ndarray, Index]":
+    ...
+
+
+@overload
+def factorize(
+    values: "SameIndex",
+    sort: bool = False,
+    na_sentinel: int = -1,
+    size_hint: Optional[int] = None,
+) -> Tuple[np.ndarray, "SameIndex"]:
+    ...
+
+
+@overload
+def factorize(
+    values: "SameExtensionArray",
+    sort: bool = False,
+    na_sentinel: int = -1,
+    size_hint: Optional[int] = None,
+) -> Tuple[np.ndarray, "SameExtensionArray"]:
+    ...
+
+
+@overload
+def factorize(
+    values, sort: bool = False, na_sentinel: int = -1, size_hint: Optional[int] = None
+) -> Tuple[np.ndarray, np.ndarray]:
+    ...
+
+
 @Substitution(
     values=dedent(
         """\
@@ -597,7 +659,7 @@ _shared_docs[
 @Appender(_shared_docs["factorize"])
 def factorize(
     values, sort: bool = False, na_sentinel: int = -1, size_hint: Optional[int] = None
-) -> Tuple[np.ndarray, Union[np.ndarray, ABCIndex]]:
+) -> Tuple[np.ndarray, "Union[np.ndarray, Index, ExtensionArray]"]:
     # Implementation notes: This method is responsible for 3 things
     # 1.) coercing data to array-like (ndarray, Index, extension array)
     # 2.) factorizing codes and uniques
@@ -651,7 +713,7 @@ def value_counts(
     normalize: bool = False,
     bins=None,
     dropna: bool = True,
-) -> ABCSeries:
+) -> "Series":
     """
     Compute a histogram of the counts of non-null values.
 
@@ -793,7 +855,7 @@ def duplicated(values, keep="first") -> np.ndarray:
     return f(values, keep=keep)
 
 
-def mode(values, dropna: bool = True) -> ABCSeries:
+def mode(values, dropna: bool = True) -> "Series":
     """
     Returns the mode(s) of an array.
 

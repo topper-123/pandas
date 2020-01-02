@@ -42,6 +42,8 @@ Scalar = Union[PythonScalar, PandasScalar]
 Dtype = Union[str, np.dtype, "ExtensionDtype"]
 FilePathOrBuffer = Union[str, Path, IO[AnyStr]]
 FrameOrSeries = TypeVar("FrameOrSeries", bound="NDFrame")
+SameIndex = TypeVar("SameIndex", bound="Index")
+SameExtensionArray = TypeVar("SameExtensionArray", bound="ExtensionArray")
 Axis = Union[str, int]
 Ordered = Optional[bool]
 JSONSerializable = Union[PythonScalar, List, Dict]
