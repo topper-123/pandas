@@ -2418,7 +2418,8 @@ class Index(IndexOpsMixin, PandasObject):
         """
         return isinstance(self, ABCMultiIndex)
 
-    def _is_num_index(self) -> bool:
+    @classmethod
+    def _is_num_index(cls) -> bool:
         """
         Whether self is a NumIndex, but not *not* Int64Index, UInt64Index, FloatIndex.
 
@@ -2431,9 +2432,9 @@ class Index(IndexOpsMixin, PandasObject):
             UInt64Index,
         )
 
-        if not isinstance(self, NumericIndex):
+        if not issubclass(cls, NumericIndex):
             return False
-        elif isinstance(self, (Int64Index, UInt64Index, Float64Index)):
+        elif issubclass(cls, (Int64Index, UInt64Index, Float64Index)):
             return False
         else:
             return True
