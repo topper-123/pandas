@@ -94,7 +94,7 @@ class NumericIndex(Index):
         "extra": "",
     }
     _values: np.ndarray
-    _default_dtype: np.dtype
+    _default_dtype: np.dtype | None = None
     _dtype_validation_metadata: tuple[Callable[..., bool], str]
 
     _is_numeric_dtype = True
