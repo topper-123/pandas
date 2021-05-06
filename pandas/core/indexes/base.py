@@ -80,6 +80,7 @@ from pandas.core.dtypes.common import (
     is_interval_dtype,
     is_iterator,
     is_list_like,
+    is_numeric_dtype,
     is_object_dtype,
     is_scalar,
     is_signed_integer_dtype,
@@ -5686,7 +5687,7 @@ class Index(IndexOpsMixin, PandasObject):
             # empty
             attributes["dtype"] = self.dtype
 
-        if self._is_num_index() and issubclass(new_values.dtype.type, np.number):
+        if self._is_num_index() and is_numeric_dtype(new_values.dtype):
             return NumIndex(new_values, **attributes)
 
         return Index(new_values, **attributes)
