@@ -15,6 +15,7 @@ from pandas._libs import (
 from pandas._typing import (
     Dtype,
     DtypeObj,
+    final,
 )
 from pandas.util._decorators import (
     cache_readonly,
@@ -273,6 +274,15 @@ class NumericIndex(Index):
         """
         pass
 
+    @final
+    @cache_readonly
+    def _can_hold_na(self) -> bool:
+        if is_integer_dtype(self.dtype):
+            return False
+        else:
+            return True
+
+    @final
     @property
     def _is_all_dates(self) -> bool:
         """
