@@ -80,13 +80,13 @@ _num_index_shared_docs[
 
 
 class NumericIndex(Index):
-    _numeric_index_descr_args = {
+    _index_descr_args = {
         "klass": "NumericIndex",
         "ltype": "integer or float",
         "dtype": "inferred",
         "extra": "",
     }
-    __doc__ = _num_index_shared_docs["class_descr"] % _numeric_index_descr_args
+    __doc__ = _num_index_shared_docs["class_descr"] % _index_descr_args
 
     _typ = "numericindex"
     _values: np.ndarray
